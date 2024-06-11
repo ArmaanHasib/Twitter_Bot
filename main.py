@@ -1,19 +1,21 @@
-import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 import time
+import os
 
-PROMISED_DOWN = 30
-PROMISED_UP = 15
+PROMISED_DOWN = 30.00
+PROMISED_UP = 15.00
 CHROME_DRIVER_PATH = 'C:\\Users\\sunny\\Downloads\\chromedriver_win32\\chromedriver.exe'
 
 TWITTER_EMAIL = os.getenv('email')
 TWITTER_PASSWORD = os.getenv('password')
 
+
 class InternetSpeedTwitterBot:
     def __init__(self):
-        # self.driver = webdriver.Chrome()
         self.down = 0
         self.up = 0
 
@@ -38,6 +40,8 @@ class InternetSpeedTwitterBot:
 
         print(f"Down: {down_speed_value}")
         print(f"Up: {up_speed_value}")
+        self.down = float(down_speed_value)
+        self.up = float(up_speed_value)
         time.sleep(5)
         driver.quit()
 
@@ -48,17 +52,32 @@ class InternetSpeedTwitterBot:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("detach", True)
         driver = webdriver.Chrome(options=chrome_options)
-        driver.get('https://www.x.com/')
-        time.sleep(2)
-        cancel_button = driver.find_element(By.XPATH,value='//*[@id="layers"]/div/div[2]/div/div/div/button')
-        cancel_button.click()
-        time.sleep(2)
-        google_login = driver.find_element(By.XPATH,value='//*[@id="container"]/div/div[2]/span[1]')
-        google_login.click()
+        driver.get('https://twitter.com/i/flow/login')
+
+        username = WebDriverWait(driver, 20).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[autocomplete="username"]')))
+        username.send_keys(TWITTER_EMAIL)
+        username.send_keys(Keys.ENTER)
+
+        password = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[name="password"]')))
+        password.send_keys(TWITTER_PASSWORD)
+        password.send_keys(Keys.ENTER)
+        time.sleep(10)
+
+        tweet = driver.find_element(By.XPATH, value='/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div/div/div/div/div[2]/div/div/div/div')
+        tweet.send_keys(f"Hey Internet Provider!\n"
+                        f"I am paying for the Rs.399 plan where I am promised a download speed of 30Mbps but I am only getting {self.down}Mbps."
+                        f"Need this to be resolved ASAP! \n\n#jio #jiofiber")
+        post = driver.find_element(By.XPATH, value='/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/div/div/div/button/div/span')
+        post.click()
+        time.sleep(10)
+
+        driver.quit()
 
 
 speed_bot = InternetSpeedTwitterBot()
-#speed_bot.get_internet_speed()
-speed_bot.tweet_at_provider()
-
+speed_bot.get_internet_speed()
+if speed_bot.down < PROMISED_DOWN:
+    speed_bot.tweet_at_provider()
 
