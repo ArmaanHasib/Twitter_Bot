@@ -32,8 +32,9 @@ class InternetSpeedTwitterBot:
         go_button = driver.find_element(By.XPATH,value='//*[@id="container"]/div/div[3]/div/div/div/div[2]/div[3]/div[1]/a/span[4]')
         go_button.click()
         time.sleep(20)
-        down_speed_value = driver.find_element(By.XPATH,
-                                               '//*[@id="container"]/div/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[1]/div/div[2]/span').text
+        # down_speed_value = driver.find_element(By.XPATH,
+        #                                        '//*[@id="container"]/div/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[1]/div/div[2]/span').text
+        down_speed_value = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="container"]/div/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[1]/div/div[2]/span'))).text
         time.sleep(20)
         up_speed_value = driver.find_element(By.XPATH,
                                              value='//*[@id="container"]/div/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[2]/div/div[2]/span').text
@@ -54,10 +55,10 @@ class InternetSpeedTwitterBot:
         driver = webdriver.Chrome(options=chrome_options)
         driver.get('https://twitter.com/i/flow/login')
 
-        username = WebDriverWait(driver, 20).until(
+        email_id = WebDriverWait(driver, 20).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[autocomplete="username"]')))
-        username.send_keys(TWITTER_EMAIL)
-        username.send_keys(Keys.ENTER)
+        email_id.send_keys(TWITTER_EMAIL)
+        email_id.send_keys(Keys.ENTER)
 
         password = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[name="password"]')))
